@@ -79,6 +79,13 @@ function send_status() {
         return
     fi
 
+    RES=$(curl --silent --request POST https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage --data chat_id=${CHAT_ID} --data text="$1" --data disable_notification=true --write-out "%{http_code}\n" --output /dev/null)
+
+    if [[ $RES != 200 ]]; then
+        color red "status sending failed"
+    else
+        color blue "status sent successfully"
+    fi
 }
 
 ########################################
@@ -214,8 +221,9 @@ function init_env() {
     # CHAT_ID
     get_env TELEGRAM_ENABLE
     get_env CHAT_ID
+    get_env TELEGRAM_TOKEN
     TELEGRAM_ENABLE=$(echo "${TELEGRAM_ENABLE}" | tr '[a-z]' '[A-Z]')
-    if [[ "${TELEGRAM_ENABLE}" == "TRUE" && "${CHAT_ID}" ]]; then
+    if [[ "${TELEGRAM_ENABLE}" == "TRUE" && "${CHAT_ID}" && "${TELEGRAM_TOKEN}"]]; then
         TELEGRAM_ENABLE="TRUE"
     else
         TELEGRAM_ENABLE="FALSE"
