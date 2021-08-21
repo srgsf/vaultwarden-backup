@@ -7,6 +7,6 @@ LABEL "repository"="https://github.com/ttionya/vaultwarden-backup" \
 COPY scripts/*.sh /app/
 
 RUN chmod +x /app/*.sh \
-  && apk add --no-cache bash sqlite p7zip heirloom-mailx tzdata
+  && apk add --no-cache bash sqlite p7zip tzdata
 
 ENTRYPOINT ["/app/entrypoint.sh"]
