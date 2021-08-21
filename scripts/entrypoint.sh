@@ -20,7 +20,7 @@ if [[ "$1" == "mail" ]]; then
 
     init_env
 
-    send_mail "vaultwarden Backup Test" "Your SMTP looks configured correctly."
+    send_status "Vaultwarden Backup Test.\nYour setup looks configured correctly."
 
     exit 0
 fi

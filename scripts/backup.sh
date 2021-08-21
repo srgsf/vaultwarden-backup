@@ -130,7 +130,7 @@ function upload() {
     if [[ ! -e "${UPLOAD_FILE}" ]]; then
         color red "upload file not found"
 
-        send_mail_content "FALSE" "File upload failed at $(date +"%Y-%m-%d %H:%M:%S %Z"). Reason: Upload file not found."
+       send_status "Vaultwarden backup file upload failed at $(date +"%Y-%m-%d %H:%M:%S %Z"). Reason: Upload file not found."
 
         exit 1
     fi
@@ -139,7 +139,7 @@ function upload() {
     if [[ $? != 0 ]]; then
         color red "upload failed"
 
-        send_mail_content "FALSE" "File upload failed at $(date +"%Y-%m-%d %H:%M:%S %Z")."
+        send_status "Vaultwarden backup file upload failed at $(date +"%Y-%m-%d %H:%M:%S %Z")."
 
         exit 1
     fi
@@ -175,8 +175,9 @@ backup_package
 upload
 clear_dir
 clear_history
-
-send_mail_content "TRUE" "The file was successfully uploaded at $(date +"%Y-%m-%d %H:%M:%S %Z")."
+if [[ "${MESSAGE_WHEN_SUCCESS}" == "TRUE" ]]; then
+    send_status "Vaultwarden backup file was successfully uploaded at $(date +"%Y-%m-%d %H:%M:%S %Z")."
+fi
 send_ping
 
 color none ""

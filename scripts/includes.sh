@@ -68,47 +68,17 @@ function check_dir_exist() {
     fi
 }
 
-########################################
-# Send mail by mailx.
-# Arguments:
-#     mail subject
-#     mail content
-# Outputs:
-#     send mail result
-########################################
-function send_mail() {
-    if [[ "${MAIL_DEBUG}" == "TRUE" ]]; then
-        local MAIL_VERBOSE="-v"
-    fi
-
-    echo "$2" | mailx ${MAIL_VERBOSE} -s "$1" ${MAIL_SMTP_VARIABLES} "${MAIL_TO}"
-    if [[ $? != 0 ]]; then
-        color red "mail sending failed"
-    else
-        color blue "mail send was successfully"
-    fi
-}
 
 ########################################
-# Send mail.
+# Send status.
 # Arguments:
-#     backup successful
-#     mail content
+#     message
 ########################################
-function send_mail_content() {
-    if [[ "${MAIL_SMTP_ENABLE}" == "FALSE" ]]; then
+function send_status() {
+    if [[ "${TELEGRAM_ENABLE}" == "FALSE" ]]; then
         return
     fi
 
-    # successful
-    if [[ "$1" == "TRUE" && "${MAIL_WHEN_SUCCESS}" == "TRUE" ]]; then
-        send_mail "vaultwarden Backup Success" "$2"
-    fi
-
-    # failed
-    if [[ "$1" == "FALSE" && "${MAIL_WHEN_FAILURE}" == "TRUE" ]]; then
-        send_mail "vaultwarden Backup Failed" "$2"
-    fi
 }
 
 ########################################
@@ -240,33 +210,33 @@ function init_env() {
     get_env PING_URL
     PING_URL="${PING_URL:-""}"
 
-    # MAIL_SMTP_ENABLE
-    # MAIL_TO
-    get_env MAIL_SMTP_ENABLE
-    get_env MAIL_TO
-    MAIL_SMTP_ENABLE=$(echo "${MAIL_SMTP_ENABLE}" | tr '[a-z]' '[A-Z]')
-    if [[ "${MAIL_SMTP_ENABLE}" == "TRUE" && "${MAIL_TO}" ]]; then
-        MAIL_SMTP_ENABLE="TRUE"
+    # TELEGRAM_ENABLE
+    # CHAT_ID
+    get_env TELEGRAM_ENABLE
+    get_env CHAT_ID
+    TELEGRAM_ENABLE=$(echo "${TELEGRAM_ENABLE}" | tr '[a-z]' '[A-Z]')
+    if [[ "${TELEGRAM_ENABLE}" == "TRUE" && "${CHAT_ID}" ]]; then
+        TELEGRAM_ENABLE="TRUE"
     else
-        MAIL_SMTP_ENABLE="FALSE"
+        TELEGRAM_ENABLE="FALSE"
     fi
 
-    # MAIL_WHEN_SUCCESS
-    get_env MAIL_WHEN_SUCCESS
-    MAIL_WHEN_SUCCESS=$(echo "${MAIL_WHEN_SUCCESS}" | tr '[a-z]' '[A-Z]')
-    if [[ "${MAIL_WHEN_SUCCESS}" == "FALSE" ]]; then
-        MAIL_WHEN_SUCCESS="FALSE"
+    # MESSAGE_WHEN_SUCCESS
+    get_env MESSAGE_WHEN_SUCCESS
+    MESSAGE_WHEN_SUCCESS=$(echo "${MESSAGE_WHEN_SUCCESS}" | tr '[a-z]' '[A-Z]')
+    if [[ "${MESSAGE_WHEN_SUCCESS}" == "FALSE" ]]; then
+        MESSAGE_WHEN_SUCCESS="FALSE"
     else
-        MAIL_WHEN_SUCCESS="TRUE"
+        MESSAGE_WHEN_SUCCESS="TRUE"
     fi
 
-    # MAIL_WHEN_FAILURE
-    get_env MAIL_WHEN_FAILURE
-    MAIL_WHEN_FAILURE=$(echo "${MAIL_WHEN_FAILURE}" | tr '[a-z]' '[A-Z]')
-    if [[ "${MAIL_WHEN_FAILURE}" == "FALSE" ]]; then
-        MAIL_WHEN_FAILURE="FALSE"
+    # MESSAGE_WHEN_FAILURE
+    get_env MESSAGE_WHEN_FAILURE
+    MESSAGE_WHEN_FAILURE=$(echo "${MESSAGE_WHEN_FAILURE}" | tr '[a-z]' '[A-Z]')
+    if [[ "${MESSAGE_WHEN_FAILURE}" == "FALSE" ]]; then
+        MESSAGE_WHEN_FAILURE="FALSE"
     else
-        MAIL_WHEN_FAILURE="TRUE"
+        MESSAGE_WHEN_FAILURE="TRUE"
     fi
 
     # TIMEZONE
@@ -296,11 +266,11 @@ function init_env() {
     if [[ -n "${PING_URL}" ]]; then
         color yellow "PING_URL: ${PING_URL}"
     fi
-    color yellow "MAIL_SMTP_ENABLE: ${MAIL_SMTP_ENABLE}"
-    if [[ "${MAIL_SMTP_ENABLE}" == "TRUE" ]]; then
-        color yellow "MAIL_TO: ${MAIL_TO}"
-        color yellow "MAIL_WHEN_SUCCESS: ${MAIL_WHEN_SUCCESS}"
-        color yellow "MAIL_WHEN_FAILURE: ${MAIL_WHEN_FAILURE}"
+    color yellow "TELEGRAM_ENABLE: ${TELEGRAM_ENABLE}"
+    if [[ "${TELEGRAM_ENABLE}" == "TRUE" ]]; then
+        color yellow "CHAT_ID: ${CHAT_ID}"
+        color yellow "MESSAGE_WHEN_SUCCESS: ${MESSAGE_WHEN_SUCCESS}"
+        color yellow "MESSAGE_WHEN_FAILURE: ${MESSAGE_WHEN_FAILURE}"
     fi
     color yellow "TIMEZONE: ${TIMEZONE}"
     color yellow "========================================"
