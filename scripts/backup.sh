@@ -124,7 +124,8 @@ function backup_package() {
 }
 
 function upload() {
-    color blue "upload backup file to storage system"
+    REMOTE=$1
+    color blue "upload backup file to ${REMOTE} storage system"
 
     # upload file not exist
     if [[ ! -e "${UPLOAD_FILE}" ]]; then
@@ -132,49 +133,57 @@ function upload() {
 
        send_status_fail "Backup file upload failed at $(date +"%Y-%m-%d %H:%M:%S %Z"). Reason: Upload file not found."
 
-        exit 1
+        return 1
     fi
 
-    rclone copy "${UPLOAD_FILE}" "${RCLONE_REMOTE}"
+    rclone copy "${UPLOAD_FILE}" "${REMOTE}"
     if [[ $? != 0 ]]; then
         color red "upload failed"
 
-        send_status_fail "Backup file upload failed at $(date +"%Y-%m-%d %H:%M:%S %Z")."
+        send_status_fail "Backup file upload to ${REMOTE} failed at $(date +"%Y-%m-%d %H:%M:%S %Z")."
 
-        exit 1
+        return 1
     fi
 }
 
 function clear_history() {
     if [[ "${BACKUP_KEEP_DAYS}" -gt 0 ]]; then
         color blue "delete ${BACKUP_KEEP_DAYS} days ago backup files"
-
-        mapfile -t RCLONE_DELETE_LIST < <(rclone lsf "${RCLONE_REMOTE}" --min-age "${BACKUP_KEEP_DAYS}d")
+        REMOTE=$1
+        mapfile -t RCLONE_DELETE_LIST < <(rclone lsf "${REMOTE}" --min-age "${BACKUP_KEEP_DAYS}d")
 
         for RCLONE_DELETE_FILE in "${RCLONE_DELETE_LIST[@]}"
         do
             color yellow "deleting \"${RCLONE_DELETE_FILE}\""
 
-            rclone delete "${RCLONE_REMOTE}/${RCLONE_DELETE_FILE}"
+            rclone delete "${REMOTE}/${RCLONE_DELETE_FILE}"
             if [[ $? != 0 ]]; then
-                color red "delete \"${RCLONE_DELETE_FILE}\" failed"
+                color red "delete \"${RCLONE_DELETE_FILE}\" failed in ${REMOTE}"
             fi
         done
     fi
 }
 
+function upload_and_clear_all() {
+    for i in ${RCLONE_REMOTE}
+    do
+        upload "$i"
+        if [[ $? == 0 ]]; then
+           clear_history "$i"
+        fi
+    done
+}
+
 color blue "running backup program..."
 
 init_env
-check_rclone_connection
-
+check_rclone_remotes
 clear_dir
 backup_init
 backup
 backup_package
-upload
+upload_and_clear_all
 clear_dir
-clear_history
 send_status_success "Backup file was successfully uploaded at $(date +"%Y-%m-%d %H:%M:%S %Z")."
 send_ping
 

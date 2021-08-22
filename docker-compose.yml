@@ -17,8 +17,7 @@ services:
     image: ttionya/vaultwarden-backup:latest
     restart: always
     # environment:
-    #   RCLONE_REMOTE_NAME: 'BitwardenBackup'
-    #   RCLONE_REMOTE_DIR: '/BitwardenBackup/'
+    # RCLONE_REMOTE="BitwardenBackup:/BitwardenBackup"
     #   CRON: '5 * * * *'
     #   ZIP_ENABLE: 'TRUE'
     #   ZIP_PASSWORD: 'WHEREISMYPASSWORD?'

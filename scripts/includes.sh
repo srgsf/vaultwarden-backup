@@ -27,19 +27,39 @@ function color() {
 ########################################
 # Check storage system connection success.
 # Arguments:
-#     None
+#     remote
 ########################################
 function check_rclone_connection() {
-    rclone config show "${RCLONE_REMOTE_NAME}" > /dev/null 2>&1
+    REMOTE="$1"
+    REMOTE_NAME=$(echo "${REMOTE}" | sed 's/:.*// ; s/\"//')
+    rclone config show "${REMOTE_NAME}" > /dev/null 2>&1
     if [[ $? != 0 ]]; then
-        color red "rclone configuration information not found"
+        color red "rclone configuration information not found for ${REMOTE_NAME}"
         color blue "Please configure rclone first, check https://github.com/ttionya/vaultwarden-backup/blob/master/README.md#backup"
-        exit 1
+        return 1
     fi
 
-    rclone mkdir "${RCLONE_REMOTE}"
+    rclone mkdir "${REMOTE}"
     if [[ $? != 0 ]]; then
-        color red "storage system connection failure"
+        color red "storage system connection failure for ${REMOTE_NAME}"
+        return 1
+    fi
+}
+########################################
+# Check storage system connection success fo all remotes.
+# Arguments:
+#     None
+########################################
+function check_rclone_remotes() {
+    cnt=0
+    for i in ${RCLONE_REMOTE}
+    do
+        check_rclone_connection "$i"
+        if [[ $? == 0 ]]; then
+           (( cnt += 1 ))
+        fi
+    done
+    if [[ ${cnt} == 0 ]]; then
         exit 1
     fi
 }
@@ -184,16 +204,8 @@ function init_env() {
     get_env CRON
     CRON="${CRON:-"5 * * * *"}"
 
-    # RCLONE_REMOTE_NAME
-    get_env RCLONE_REMOTE_NAME
-    RCLONE_REMOTE_NAME="${RCLONE_REMOTE_NAME:-"BitwardenBackup"}"
-
-    # RCLONE_REMOTE_DIR
-    get_env RCLONE_REMOTE_DIR
-    RCLONE_REMOTE_DIR="${RCLONE_REMOTE_DIR:-"/BitwardenBackup/"}"
-
     # RCLONE_REMOTE
-    RCLONE_REMOTE=$(echo "${RCLONE_REMOTE_NAME}:${RCLONE_REMOTE_DIR}" | sed 's@\(/*\)$@@')
+    RCLONE_REMOTE=$(echo "${RCLONE_REMOTE}" | sed 's@\(/*\)$@@')
 
     # ZIP_ENABLE
     get_env ZIP_ENABLE
@@ -275,8 +287,6 @@ function init_env() {
     color yellow "DATA_SENDS: ${DATA_SENDS}"
     color yellow "========================================"
     color yellow "CRON: ${CRON}"
-    color yellow "RCLONE_REMOTE_NAME: ${RCLONE_REMOTE_NAME}"
-    color yellow "RCLONE_REMOTE_DIR: ${RCLONE_REMOTE_DIR}"
     color yellow "RCLONE_REMOTE: ${RCLONE_REMOTE}"
     color yellow "ZIP_ENABLE: ${ZIP_ENABLE}"
     color yellow "ZIP_PASSWORD: ${#ZIP_PASSWORD} Chars"
