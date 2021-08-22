@@ -88,6 +88,18 @@ function send_status() {
     fi
 }
 
+function send_status_fail() {
+    if [[ "${MESSAGE_WHEN_FAILURE}" == "TRUE" ]]; then
+        send_status $1
+    fi
+}
+
+function send_status_success() {
+    if [[ "${MESSAGE_WHEN_SUCCESS}" == "TRUE" ]]; then
+        send_status $1
+    fi
+}
+
 ########################################
 # Send health check ping.
 # Arguments:
@@ -217,17 +229,6 @@ function init_env() {
     get_env PING_URL
     PING_URL="${PING_URL:-""}"
 
-    # TELEGRAM_ENABLE
-    # CHAT_ID
-    get_env TELEGRAM_ENABLE
-    get_env CHAT_ID
-    get_env TELEGRAM_TOKEN
-    TELEGRAM_ENABLE=$(echo "${TELEGRAM_ENABLE}" | tr '[a-z]' '[A-Z]')
-    if [[ "${TELEGRAM_ENABLE}" == "TRUE" && "${CHAT_ID}" && "${TELEGRAM_TOKEN}"]]; then
-        TELEGRAM_ENABLE="TRUE"
-    else
-        TELEGRAM_ENABLE="FALSE"
-    fi
 
     # MESSAGE_WHEN_SUCCESS
     get_env MESSAGE_WHEN_SUCCESS
@@ -245,6 +246,17 @@ function init_env() {
         MESSAGE_WHEN_FAILURE="FALSE"
     else
         MESSAGE_WHEN_FAILURE="TRUE"
+    fi
+
+    # TELEGRAM_ENABLE
+    # CHAT_ID
+    # TELEGRAM_TOKEN
+    get_env CHAT_ID
+    get_env TELEGRAM_TOKEN
+    if [[ "${CHAT_ID}" && "${TELEGRAM_TOKEN}" && ("${MESSAGE_WHEN_SUCCESS}" == "TRUE" || "${MESSAGE_WHEN_FAILURE}" == "TRUE") ]]; then
+        TELEGRAM_ENABLE="TRUE"
+    else
+        TELEGRAM_ENABLE="FALSE"
     fi
 
     # TIMEZONE
