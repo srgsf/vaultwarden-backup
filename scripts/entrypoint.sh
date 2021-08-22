@@ -10,16 +10,9 @@ if [[ "$1" == "rclone" ]]; then
 fi
 
 # mailx test
-if [[ "$1" == "mail" ]]; then
-    MAIL_SMTP_ENABLE="TRUE"
-    MAIL_DEBUG="TRUE"
-
-    if [[ -n "$2" ]]; then
-        MAIL_TO="$2"
-    fi
+if [[ "$1" == "telegram" ]]; then
 
     init_env
-
     send_status "Vaultwarden Backup Test.\nYour setup looks configured correctly."
 
     exit 0

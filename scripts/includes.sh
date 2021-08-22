@@ -90,13 +90,13 @@ function send_status() {
 
 function send_status_fail() {
     if [[ "${MESSAGE_WHEN_FAILURE}" == "TRUE" ]]; then
-        send_status $1
+        send_status "$1"
     fi
 }
 
 function send_status_success() {
     if [[ "${MESSAGE_WHEN_SUCCESS}" == "TRUE" ]]; then
-        send_status $1
+        send_status "$1"
     fi
 }
 
