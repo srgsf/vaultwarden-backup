@@ -78,8 +78,8 @@ function send_status() {
     if [[ "${TELEGRAM_ENABLE}" == "FALSE" ]]; then
         return
     fi
-
-    RES=$(curl --silent --request POST https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage --data chat_id=${CHAT_ID} --data text="$1" --data disable_notification=true --write-out "%{http_code}\n" --output /dev/null)
+    MESSAGE=$'*Vaultwarden backup*\n'"$1"
+    RES=$(curl --silent --request POST https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage --data chat_id=${CHAT_ID} --data-binary text="${MESSAGE}" --data disable_notification=true --data parse_mode=markdown --write-out "%{http_code}\n" --output /dev/null)
 
     if [[ $RES != 200 ]]; then
         color red "status sending failed"
@@ -223,7 +223,7 @@ function init_env() {
 
     # BACKUP_FILE_DATE_FORMAT
     get_env BACKUP_FILE_DATE_SUFFIX
-    BACKUP_FILE_DATE_FORMAT=$(echo "%Y%m%d${BACKUP_FILE_DATE_SUFFIX}" | sed 's/[^0-9a-zA-Z%_-]//g')
+    BACKUP_FILE_DATE_FORMAT=$(echo "%Y%m%d%H${BACKUP_FILE_DATE_SUFFIX}" | sed 's/[^0-9a-zA-Z%_-]//g')
 
     # PING_URL
     get_env PING_URL

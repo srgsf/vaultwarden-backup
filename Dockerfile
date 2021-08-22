@@ -1,8 +1,8 @@
 FROM rclone/rclone:1.56.0
 
-LABEL "repository"="https://github.com/ttionya/vaultwarden-backup" \
-  "homepage"="https://github.com/ttionya/vaultwarden-backup" \
-  "maintainer"="ttionya <git@ttionya.com>"
+LABEL "repository"="https://github.com/srgsf/vaultwarden-backup" \
+  "homepage"="https://github.com/srgsf/vaultwarden-backup" \
+  "maintainer"="srgsf <srgsf.github@gmail.com>"
 
 COPY scripts/*.sh /app/
 

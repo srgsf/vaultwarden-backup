@@ -13,7 +13,7 @@ fi
 if [[ "$1" == "telegram" ]]; then
 
     init_env
-    send_status "Vaultwarden Backup Test.\nYour setup looks configured correctly."
+    send_status "Your setup looks configured correctly."
 
     exit 0
 fi
