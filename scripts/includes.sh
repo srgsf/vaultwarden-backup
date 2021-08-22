@@ -31,7 +31,7 @@ function color() {
 ########################################
 function check_rclone_connection() {
     REMOTE="$1"
-    REMOTE_NAME=$(echo "${REMOTE}" | sed 's/:.*// ; s/\"//')
+    REMOTE_NAME=$(echo "${REMOTE}" | sed 's/:.*//')
     rclone config show "${REMOTE_NAME}" > /dev/null 2>&1
     if [[ $? != 0 ]]; then
         color red "rclone configuration information not found for ${REMOTE_NAME}"
@@ -54,7 +54,8 @@ function check_rclone_remotes() {
     cnt=0
     for i in ${RCLONE_REMOTE}
     do
-        check_rclone_connection "$i"
+        CUR=$(echo "$i" | sed 's/\"//g')
+        check_rclone_connection "${CUR}"
         if [[ $? == 0 ]]; then
            (( cnt += 1 ))
         fi
