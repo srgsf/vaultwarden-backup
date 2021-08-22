@@ -170,7 +170,7 @@ function upload_and_clear_all() {
         CUR=$(echo "$i" | sed 's/\"//g')
         upload ${CUR}
         if [[ $? == 0 ]]; then
-           send_status_success "Backup file was successfully uploaded to ${CUR} at $(date +"%Y-%m-%d %H:%M:%S %Z"
+           send_status_success "Backup file was successfully uploaded to ${CUR} at $(date +"%Y-%m-%d %H:%M:%S %Z")"
            clear_history "${CUR}"
         fi
     done
@@ -186,7 +186,6 @@ backup
 backup_package
 upload_and_clear_all
 clear_dir
-send_status_success "Backup file was successfully uploaded at $(date +"%Y-%m-%d %H:%M:%S %Z")."
 send_ping
 
 color none ""
