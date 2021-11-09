@@ -1,5 +1,50 @@
 # Changelog
 
+## v1.9.6
+
+### Feature
+
+- Update Dockerfile base image to `rclone/rclone:1.57.0`
+- Display the time of running the backup program
+
+<br>
+
+
+
+## v1.9.5
+
+### Feature
+
+- Update Dockerfile base image to `rclone/rclone:1.56.2`
+
+<br>
+
+
+
+## v1.9.4
+
+### Fixed
+
+- Fix the wrong rsa_key compressed file name for searching when restoring (fixed [#32](https://github.com/ttionya/vaultwarden-backup/issues/32))
+
+<br>
+
+
+
+## v1.9.3
+
+### Feature
+
+- Update Dockerfile base image to `rclone/rclone:1.56.1`
+
+### Chore
+
+- On the 10th, 20th and 30th of every month, republish the Docker image to update the alpine packages
+
+<br>
+
+
+
 ## v1.9.2
 
 ### Feature
