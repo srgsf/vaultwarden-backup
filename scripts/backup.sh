@@ -151,7 +151,7 @@ function clear_history() {
         color blue "delete ${BACKUP_KEEP_DAYS} days ago backup files"
         REMOTE=$1
         mapfile -t RCLONE_DELETE_LIST < <(rclone lsf "${REMOTE}" --min-age "${BACKUP_KEEP_DAYS}d")
-
+        REMOTE=${REMOTE%/}
         for RCLONE_DELETE_FILE in "${RCLONE_DELETE_LIST[@]}"
         do
             color yellow "deleting \"${RCLONE_DELETE_FILE}\""
